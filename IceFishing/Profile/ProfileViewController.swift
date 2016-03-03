@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class ProfileViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate{
     
     var user: User = User.currentUser
     
@@ -33,6 +33,9 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
     @IBOutlet weak var separator: UIView!
 	@IBOutlet weak var collectionView: UICollectionView!
 	
+    //Animation
+    private let popTransition = PopAnimator()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 		
@@ -68,6 +71,12 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         profilePictureView.layer.borderColor = UIColor.whiteColor().CGColor
         profilePictureView.layer.cornerRadius = profilePictureView.frame.size.height/2
         profilePictureView.clipsToBounds = true
+        
+        //Set tap gesture for profile picture
+        profilePictureView.userInteractionEnabled = true
+		let tapProfile = UITapGestureRecognizer()
+		profilePictureView.addGestureRecognizer(tapProfile)
+		tapProfile.addTarget(self, action: "profileTapped:")
 		
         if User.currentUser.username == user.username {
 			followButton.setTitle("EDIT", forState: .Normal)
@@ -122,7 +131,35 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
     func popToRoot() {
         navigationController?.popToRootViewControllerAnimated(true)
     }
-    
+	
+	// Show profile picture upon tap
+	@IBAction func profileTapped(sender: UITapGestureRecognizer){
+		let proPicVC = ProfilePictureViewController()
+		//set user
+		proPicVC.user = user
+		//animation
+		proPicVC.transitioningDelegate = self
+		presentViewController(proPicVC, animated: true, completion: nil)
+	}
+	
+	//Animation for Profile picture view
+	func animationControllerForPresentedController(
+		presented: UIViewController,
+		presentingController presenting: UIViewController,
+		sourceController source: UIViewController) ->
+		UIViewControllerAnimatedTransitioning? {
+				popTransition.originFrame = profilePictureView.superview!.convertRect(profilePictureView.frame, toView: nil)
+				popTransition.presenting = true
+				
+				return popTransition
+	}
+	
+	func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+		popTransition.presenting = false
+		
+		return popTransition
+	}
+	
     // <------------------------FOLLOW BUTTONS------------------------>
 	
     @IBAction func followButtonPressed(sender: UIButton) {
