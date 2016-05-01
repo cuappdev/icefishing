@@ -12,8 +12,10 @@ import MediaPlayer
 class PlayerTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
 	// For pinning
 	let topPinViewContainer = UIView()
+	let transparentTopPinViewContainer = UIView()
 	let bottomPinViewContainer = UIView()
 	let pinView = NSBundle.mainBundle().loadNibNamed("FeedTableViewCell", owner: nil, options: nil)[0] as! FeedTableViewCell
+	var pinnedIndexPath: NSIndexPath?
 	var pinViewGestureRecognizer: UITapGestureRecognizer!
 	
 	var searchController: UISearchController!
@@ -31,7 +33,7 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
                 currentlyPlayingPost?.player.togglePlaying()
             } else {
                 currentlyPlayingPost?.player.pause(true)
-                currentlyPlayingPost?.player.progress = 1.0 // Fill cell as played
+                //currentlyPlayingPost?.player.progress = 1.0 // Fill cell as played
                 
                 if let currentlyPlayingIndexPath = currentlyPlayingIndexPath {
                     currentlyPlayingPost = array[currentlyPlayingIndexPath.row]
