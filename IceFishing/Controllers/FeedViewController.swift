@@ -120,6 +120,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		cell.postView.post = posts[indexPath.row]
 		cell.postView.post?.player.prepareToPlay()
 		cell.postView.delegate = self
+		cell.postView.playerController = self as PlayerTableViewController
 		return cell
 	}
 	

@@ -53,6 +53,7 @@ class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegat
 		let posts = searchController.active ? filteredPosts : self.posts
 		cell.postView.post = posts[indexPath.row]
 		cell.postView.delegate = self
+		cell.postView.playerController = self as PlayerTableViewController
 		cell.postView.post?.player.prepareToPlay()
 		
         let date = NSDateFormatter.simpleDateFormatter.stringFromDate(postedDates[indexPath.row])
