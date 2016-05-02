@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostViewDelegate {
+class FeedViewController: PlayerTableViewController, SongSearchDelegate {
 	
 	var customRefresh: ADRefreshControl?
 	var plusButton: UIButton!
@@ -120,7 +120,6 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		cell.postView.post = posts[indexPath.row]
 		cell.postView.post?.player.prepareToPlay()
 		cell.postView.delegate = self
-		cell.postView.playerController = self as PlayerTableViewController
 		return cell
 	}
 	

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LikedTableViewController: PlayerTableViewController, PostViewDelegate {
+class LikedTableViewController: PlayerTableViewController {
     let cellIdentifier = "FeedTableViewCell"
     
     override func viewDidLoad() {
@@ -49,7 +49,6 @@ class LikedTableViewController: PlayerTableViewController, PostViewDelegate {
 		let posts = searchController.active ? filteredPosts : self.posts
 		cell.postView.post = posts[indexPath.row]
 		cell.postView.delegate = self
-		cell.postView.playerController = self as PlayerTableViewController
 		print("asign player controller")
 		cell.postView.post?.player.prepareToPlay()
 		

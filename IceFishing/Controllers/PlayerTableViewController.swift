@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class PlayerTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+class PlayerTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, PostViewDelegate {
 	// For pinning
 	let topPinViewContainer = UIView()
 	let bottomPinViewContainer = UIView()

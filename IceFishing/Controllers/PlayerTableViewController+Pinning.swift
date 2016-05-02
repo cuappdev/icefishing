@@ -13,7 +13,7 @@ extension PlayerTableViewController {
 	internal func setupPinViews() {
 		//pinViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(PlayerTableViewController.togglePlay))
 		pinView.backgroundColor = UIColor.iceLightGray
-		pinView.postView.playerController = self as PlayerTableViewController
+		pinView.postView.delegate = self
 	}
 	
 	internal func positionPinViews() {
@@ -36,8 +36,6 @@ extension PlayerTableViewController {
 		guard let selected = currentlyPlayingIndexPath else { return }
 		pinnedIndexPath = currentlyPlayingIndexPath
 		if pinView.postView.post != posts[selected.row] {
-//			let cell = tableView.cellForRowAtIndexPath(selected) as! FeedTableViewCell
-//			pinView.postView = cell.postView
 			pinView.postView.post = posts[selected.row]
 		}
 		guard let selectedCell = tableView.cellForRowAtIndexPath(selected) else { return }

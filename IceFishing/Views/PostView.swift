@@ -46,7 +46,6 @@ class PostView: UIView, UIGestureRecognizerDelegate {
     var type: ViewType = .Feed
 	var songStatus: SavedSongStatus = .NotSaved
 	var delegate: PostViewDelegate?
-	var playerController: PlayerTableViewController?
     private var updateTimer: NSTimer?
     private var notificationHandler: AnyObject?
     
@@ -343,8 +342,9 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 				delegate?.didTapImageForPostView?(self)
 			} else {
 				post.player.togglePlaying()
-				print(playerController)
-				playerController?.updatePlayInfo()
+				//print(playerController)
+				//playerController?.updatePlayInfo()
+				(delegate as! PlayerTableViewController).updatePlayInfo()
 			}
 		}
 	}
