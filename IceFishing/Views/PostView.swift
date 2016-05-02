@@ -342,9 +342,7 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 				delegate?.didTapImageForPostView?(self)
 			} else {
 				post.player.togglePlaying()
-				//print(playerController)
-				//playerController?.updatePlayInfo()
-				(delegate as! PlayerTableViewController).updatePlayInfo()
+				(delegate as! PlayerTableViewController).updatePlayInfo(post)
 			}
 		}
 	}

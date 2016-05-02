@@ -17,9 +17,6 @@ class PostHistoryTableViewController: PlayerTableViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-	
-		notifCenterSetup()
-		commandCenterHandler()
 		
         tableView.separatorStyle = .None
         tableView.backgroundColor = UIColor.iceDarkGray

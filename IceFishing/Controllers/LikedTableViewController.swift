@@ -20,8 +20,6 @@ class LikedTableViewController: PlayerTableViewController {
 		definesPresentationContext = true
 		tableView.registerNib(UINib(nibName: cellIdentifier, bundle: nil), forCellReuseIdentifier: "FeedCell")
 		
-		notifCenterSetup()
-		commandCenterHandler()
 		addHamburgerMenu()
 
 		// Fix color above search bar
@@ -49,7 +47,6 @@ class LikedTableViewController: PlayerTableViewController {
 		let posts = searchController.active ? filteredPosts : self.posts
 		cell.postView.post = posts[indexPath.row]
 		cell.postView.delegate = self
-		print("asign player controller")
 		cell.postView.post?.player.prepareToPlay()
 		
 		return cell
