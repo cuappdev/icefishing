@@ -340,6 +340,9 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 				}
 			} else if hitView == avatarImageView {
 				delegate?.didTapImageForPostView?(self)
+			} else {
+				post.player.togglePlaying()
+				(delegate as! PlayerTableViewController).updatePlayInfo(post)
 			}
 		}
 	}

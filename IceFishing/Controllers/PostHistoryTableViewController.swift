@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegate {
+class PostHistoryTableViewController: PlayerTableViewController {
 	
 	var songLikes: [Int] = []
     var postedDates: [NSDate] = []
@@ -17,9 +17,6 @@ class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegat
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-	
-		notifCenterSetup()
-		commandCenterHandler()
 		
         tableView.separatorStyle = .None
         tableView.backgroundColor = UIColor.iceDarkGray

@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostViewDelegate {
+class FeedViewController: PlayerTableViewController, SongSearchDelegate {
 	
 	var customRefresh: ADRefreshControl?
 	var plusButton: UIButton!

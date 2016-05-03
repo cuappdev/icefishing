@@ -9,42 +9,22 @@
 import UIKit
 import MediaPlayer
 
-class PlayerTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+class PlayerTableViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, PostViewDelegate {
 	// For pinning
 	let topPinViewContainer = UIView()
 	let bottomPinViewContainer = UIView()
 	let pinView = NSBundle.mainBundle().loadNibNamed("FeedTableViewCell", owner: nil, options: nil)[0] as! FeedTableViewCell
-	var pinViewGestureRecognizer: UITapGestureRecognizer!
 	
 	var searchController: UISearchController!
 	var posts: [Post] = []
 	var filteredPosts: [Post] = []
     var currentlyPlayingPost: Post?
 	
-    var currentlyPlayingIndexPath: NSIndexPath? {
-        didSet {
-			var array = posts
-			if searchController.active {
-				array = filteredPosts
-			}
-            if let row = currentlyPlayingIndexPath?.row where currentlyPlayingPost?.isEqual(array[row]) ?? false {
-                currentlyPlayingPost?.player.togglePlaying()
-            } else {
-                currentlyPlayingPost?.player.pause(true)
-                currentlyPlayingPost?.player.progress = 1.0 // Fill cell as played
-                
-                if let currentlyPlayingIndexPath = currentlyPlayingIndexPath {
-                    currentlyPlayingPost = array[currentlyPlayingIndexPath.row]
-                    currentlyPlayingPost!.player.play(true)
-                } else {
-                    currentlyPlayingPost = nil
-                }
-            }
-            tableView.selectRowAtIndexPath(currentlyPlayingIndexPath, animated: false, scrollPosition: .None)
-        }
-    }
+    var currentlyPlayingIndexPath: NSIndexPath?
 
 	var savedSongAlertView: SavedSongView!
+	
+	var justOpened = true
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +46,7 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 		tableView.backgroundView = UIView() // Fix color above search bar
 		
 		setupPinViews()
+		notifCenterSetup()
     }
 	
 	override func viewDidAppear(animated: Bool) {
@@ -73,6 +54,7 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 		
 		positionPinViews()
 		addRevealGesture()
+		justOpened = true
 	}
 	
 	override func viewDidDisappear(animated: Bool) {
@@ -94,6 +76,21 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 	func navigateToSuggestions() {
 		let usersVC = (UIApplication.sharedApplication().delegate as! AppDelegate).usersVC
 		navigationController?.setViewControllers([usersVC], animated: false)
+	}
+	
+	func updatePlayInfo(post: Post) {
+		if justOpened {
+			removeCommandCenterHandler()
+			commandCenterHandler()
+			justOpened = false
+		}
+		
+		let array = (searchController.active) ? filteredPosts : posts
+		//A hacky solution to get indexPath
+		let indexPath = NSIndexPath(forRow: array.indexOf(post)!, inSection: 0)
+		currentlyPlayingIndexPath = indexPath
+		currentlyPlayingPost = post
+		updateNowPlayingInfo()
 	}
 	
     private func updateNowPlayingInfo() {
@@ -118,7 +115,6 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 				if searchController.active {
 					count = filteredPosts.count
 				}
-				
                 center.nowPlayingInfo = [
                     MPMediaItemPropertyTitle: post.song.title,
                     MPMediaItemPropertyArtist: post.song.artist,
@@ -201,13 +197,18 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
         
         center.nextTrackCommand.addTargetWithHandler { [weak self] _ in
 			var count = self!.posts.count
-			if self!.searchController.active {
+			if self!.searchController.active {	
 				count = self!.filteredPosts.count
 			}
             if let path = self?.currentlyPlayingIndexPath {
                 if path.row < count - 1 {
                     self?.currentlyPlayingIndexPath = NSIndexPath(forRow: path.row + 1, inSection: path.section)
-                    return .Success
+					let array = (self!.searchController.active) ? self!.filteredPosts : self!.posts
+					self?.currentlyPlayingPost = array[path.row + 1]
+					if let player = self?.currentlyPlayingPost?.player {
+						player.play(true)
+						return .Success
+					}
                 }
             }
             return .NoSuchContent
@@ -217,8 +218,13 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
             if let path = self?.currentlyPlayingIndexPath {
                 if path.row > 0 {
                     self?.currentlyPlayingIndexPath = NSIndexPath(forRow: path.row - 1, inSection: path.section)
+					let array = (self!.searchController.active) ? self!.filteredPosts : self!.posts
+					self?.currentlyPlayingPost = array[path.row - 1]
+					if let player = self?.currentlyPlayingPost?.player {
+						player.play(true)
+						return .Success
+					}
                 }
-                return .Success
             }
             return .NoSuchContent
         }
@@ -226,6 +232,14 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
         center.seekForwardCommand.addTargetWithHandler { _ in .Success }
         center.seekBackwardCommand.addTargetWithHandler { _ in .Success }
     }
+	
+	func removeCommandCenterHandler() {
+		let center = MPRemoteCommandCenter.sharedCommandCenter()
+		center.playCommand.removeTarget(nil)
+		center.pauseCommand.removeTarget(nil)
+		center.nextTrackCommand.removeTarget(nil)
+		center.previousTrackCommand.removeTarget(nil)
+	}
 	
 	// MARK: - Search Stuff
 	

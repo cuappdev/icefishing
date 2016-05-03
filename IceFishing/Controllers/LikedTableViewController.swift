@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LikedTableViewController: PlayerTableViewController, PostViewDelegate {
+class LikedTableViewController: PlayerTableViewController {
     let cellIdentifier = "FeedTableViewCell"
     
     override func viewDidLoad() {
@@ -20,8 +20,6 @@ class LikedTableViewController: PlayerTableViewController, PostViewDelegate {
 		definesPresentationContext = true
 		tableView.registerNib(UINib(nibName: cellIdentifier, bundle: nil), forCellReuseIdentifier: "FeedCell")
 		
-		notifCenterSetup()
-		commandCenterHandler()
 		addHamburgerMenu()
 
 		// Fix color above search bar

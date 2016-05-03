@@ -11,9 +11,8 @@ import UIKit
 extension PlayerTableViewController {
 	
 	internal func setupPinViews() {
-		pinViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(PlayerTableViewController.togglePlay))
-		pinViewGestureRecognizer.delegate = pinView.postView
 		pinView.backgroundColor = UIColor.iceLightGray
+		pinView.postView.delegate = self
 	}
 	
 	internal func positionPinViews() {
@@ -49,10 +48,6 @@ extension PlayerTableViewController {
 			topPinViewContainer.hidden = true
 			bottomPinViewContainer.hidden = true
 		}
-	}
-	
-	func togglePlay() {
-		pinView.postView.post?.player.togglePlaying()
 	}
 	
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
