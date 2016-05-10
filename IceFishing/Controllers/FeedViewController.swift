@@ -27,7 +27,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 	}()
 	
 	var pretappedPlusButton = false
-
+	
 	// MARK: - Lifecycle Methods
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -41,8 +41,9 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		//not very elegant solution, but fixes some UI issues
 		view.userInteractionEnabled = false
 		
-		refreshFeed()
 		addHamburgerMenu()
+		
+		refreshFeedWithDelay(0, timeout: 10.0)
 		
 		tableView.tableHeaderView = nil
 		
@@ -62,7 +63,6 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 			plusButtonTapped()
 			pretappedPlusButton = false
 		} else {
-			print("false")
 			rotatePlusButton(false)
 		}
 	}
@@ -70,7 +70,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 
-		// Used to update Spotify + button, not very elegant solution
+        // Used to update Spotify + button, not very elegant solution
 		for cell in tableView.visibleCells as! [FeedTableViewCell] {
 			cell.postView.updateAddButton()
 		}
@@ -78,8 +78,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		notConnected()
 	}
 	
-	func refreshFeed() {
-		
+	func refreshFeedWithDelay(delay: Double, timeout: Double) {
 		//finished refreshing gets set to true when the api returns
 		var finishedRefreshing = false
 		//minimum time passed gets set to true when minimum delay dispatch gets called
@@ -125,10 +124,10 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		}
 		
 		//fetch for a minimum of delay seconds
-		//if after delay seconds we finished fetching, 
+		//if after delay seconds we finished fetching,
 		//then we reload the tableview, else we wait for the
 		//api to return to reload by setting minumum time passed
-		var popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(2 * Double(NSEC_PER_SEC)))
+		var popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC)))
 		dispatch_after(popTime, dispatch_get_main_queue()) {
 			if finishedRefreshing {
 				self.tableView.reloadData()
@@ -140,7 +139,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		}
 		
 		//timeout for refresh taking too long
-		popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(10 * Double(NSEC_PER_SEC)))
+		popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(timeout * Double(NSEC_PER_SEC)))
 		dispatch_after(popTime, dispatch_get_main_queue()) {
 			if !finishedRefreshing {
 				self.refreshControl?.endRefreshing()
@@ -148,6 +147,10 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 				finishedRefreshing = true
 			}
 		}
+	}
+	
+	func refreshFeed() {
+		refreshFeedWithDelay(2.0, timeout: 10.0)
 	}
 	
 	// MARK: - UITableViewDataSource
