@@ -239,12 +239,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, SWRevealViewControllerDel
 	
 	func revealController(revealController: SWRevealViewController!, willMoveToPosition position: FrontViewPosition) {
 		UIApplication.sharedApplication().sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, forEvent: nil)
-		if position == .Left {
-			revealController.frontViewController.view.userInteractionEnabled = true
-			revealController.frontViewController.revealViewController().tapGestureRecognizer()
-		} else {
-			revealController.frontViewController.view.userInteractionEnabled = false
-		}
+		revealController.frontViewController.view.userInteractionEnabled = true
+		revealController.frontViewController.revealViewController().tapGestureRecognizer()
 		//Notify any hamburger menus that the menu is being toggled
 		NSNotificationCenter.defaultCenter().postNotificationName(RevealControllerToggledNotificaiton, object: revealController)
 	}
