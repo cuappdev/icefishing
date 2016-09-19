@@ -96,7 +96,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		var finishedRefreshing = false
 		//minimum time passed gets set to true when minimum delay dispatch gets called
 		var minimumTimePassed = false
-	
+		
 		API.sharedAPI.fetchFeedOfEveryone { [weak self] in
 			self?.posts = $0
 			//return even if we get data after a timeout
