@@ -75,6 +75,10 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
+		nameLabel.hidden = notConnected(true)
+		usernameLabel.hidden = notConnected(false)
+		followButton.hidden = notConnected(false)
+		
 		addRevealGesture()
 	}
 	
@@ -119,7 +123,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         profilePictureView.clipsToBounds = true
         
         //Set tap gesture for profile picture
-        profilePictureView.userInteractionEnabled = true
+        profilePictureView.userInteractionEnabled = !notConnected(false)
 		let tapProfile = UITapGestureRecognizer()
 		profilePictureView.addGestureRecognizer(tapProfile)
 		tapProfile.addTarget(self, action: #selector(profileTapped(_:)))
@@ -131,7 +135,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
 		} else {
 			title = "Profile"
 			followButton.hidden = true
-			followButton.alpha = 0
 			followButton.addTarget(self, action: #selector(followButtonPressed(_:)), forControlEvents: .TouchUpInside)
 			
 			API.sharedAPI.fetchUser(user.id) {
