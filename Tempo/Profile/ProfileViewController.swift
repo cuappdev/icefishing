@@ -83,6 +83,10 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
+		nameLabel.hidden = notConnected(true)
+		usernameLabel.hidden = notConnected(false)
+		followButton.hidden = notConnected(false)
+		
 		addRevealGesture()
 	}
 	
