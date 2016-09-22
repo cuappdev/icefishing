@@ -96,10 +96,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		var finishedRefreshing = false
 		//minimum time passed gets set to true when minimum delay dispatch gets called
 		var minimumTimePassed = false
-		
-		//fetch data
-		self.notConnected(true)
-		
+	
 		API.sharedAPI.fetchFeedOfEveryone { [weak self] in
 			self?.posts = $0
 			//return even if we get data after a timeout
@@ -144,6 +141,8 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		var popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC)))
 		dispatch_after(popTime, dispatch_get_main_queue()) {
 			if finishedRefreshing {
+				Banner.hide()
+				self.plusButton.hidden = self.notConnected(false)
 				self.tableView.reloadData()
 				self.refreshControl?.endRefreshing()
 				self.view.userInteractionEnabled = true
@@ -156,6 +155,7 @@ class FeedViewController: PlayerTableViewController, SongSearchDelegate, PostVie
 		popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(timeout * Double(NSEC_PER_SEC)))
 		dispatch_after(popTime, dispatch_get_main_queue()) {
 			if !finishedRefreshing {
+				self.plusButton.hidden = self.notConnected(true)
 				self.refreshControl?.endRefreshing()
 				self.view.userInteractionEnabled = true
 				finishedRefreshing = true

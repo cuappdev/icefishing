@@ -35,7 +35,7 @@ extension UIViewController {
 		}
 	}
 	
-	// If not connected to internet return true and display banner
+	// If not connected to internet return true and display banner if animated
 	func notConnected(animated: Bool) -> Bool {
 		if !API.sharedAPI.isConnected {
 			if animated { Banner.notConnected(self) }
