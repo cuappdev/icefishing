@@ -39,7 +39,7 @@ class LikedTableViewController: PlayerTableViewController, PostViewDelegate {
 		super.viewWillAppear(animated)
 		
 		if notConnected(true) {
-			tableView.tableHeaderView = nil
+			tableView.tableHeaderView = notConnected(true) ? nil : searchController.searchBar
 		}
 	}
     
