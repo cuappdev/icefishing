@@ -69,7 +69,6 @@ class Banner {
 			topView.view.addSubview(self.notificationView)
 			self.notificationView.frame = CGRect(x: 0, y: originY, width: AWBannerProperties.width, height: AWBannerProperties.height) }, completion: nil)
 	}
-
 	
 	static func hide() {
 		UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .CurveLinear, animations: {
