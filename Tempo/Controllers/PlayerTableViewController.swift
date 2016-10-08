@@ -76,14 +76,14 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 		tableView.tableHeaderView = searchController.searchBar
 		tableView.backgroundView = UIView() // Fix color above search bar
 		
-		setupPinViews()
+//		setupPinViews()
 		notifCenterSetup()
     }
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		positionPinViews()
+//		positionPinViews()
 		addRevealGesture()
 		justOpened = true
 	}

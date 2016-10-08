@@ -11,7 +11,7 @@ import UIKit
 extension PlayerTableViewController {
 	
 	internal func setupPinViews() {
-		pinView.postView.pinned = true
+//		pinView.postView.pinned = true
 		pinView.postView.playerController = self
 		pinView.backgroundColor = UIColor.tempoLightGray
 	}
