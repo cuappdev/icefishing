@@ -108,7 +108,7 @@ class PlayerTableViewController: UITableViewController, UISearchResultsUpdating,
 		guard let post = currentlyPlayingPost else { return }
 		
 		let center = MPNowPlayingInfoCenter.defaultCenter()
-		if post.player.wasPlayed {
+		if !post.player.finishedPlaying {
 			_ = try? session.setCategory(AVAudioSessionCategoryPlayback)
 			_ = try? session.setActive(true)
 			
