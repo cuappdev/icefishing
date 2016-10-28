@@ -1,40 +1,47 @@
 //
-//  PlayerCellView.swift
+//  ExpandedPlayerView.swift
 //  Tempo
 //
-//  Created by Jesse Chen on 10/16/16.
+//  Created by Logan Allen on 10/26/16.
 //  Copyright © 2016 CUAppDev. All rights reserved.
 //
 
 import UIKit
 import MarqueeLabel
 
-let PostLikedStatusChangeNotification = "PostLikedStatusChange"
+let ExpandedPostLikedStatusChangeNotification = "PostLikedStatusChange"
 
-protocol PostDelegate {
+protocol ExpandedPostDelegate {
 	var post: Post? { get }
 }
 
-class PlayerCellView: UIView, PostDelegate {
+class ExpandedPlayerView: UIView, ExpandedPostDelegate {
 	
+	private let height = CGFloat(204)
+	
+	@IBOutlet weak var postDetailLabel: UILabel!
 	@IBOutlet weak var songLabel: MarqueeLabel!
 	@IBOutlet weak var artistLabel: MarqueeLabel!
-    @IBOutlet weak var playToggleButton: UIButton!
-	@IBOutlet weak var addButton: UIButton!
+	@IBOutlet weak var albumImage: UIImageView!
+	@IBOutlet weak var playToggleButton: UIButton!
+	@IBOutlet weak var progressView: ProgressView!
 	@IBOutlet weak var likeButton: UIButton!
-    @IBOutlet weak var progressView: ProgressView!
+    @IBOutlet weak var likeButtonImage: UIImageView!
+    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var collapseButton: UIButton!
 	
+    @IBOutlet weak var addButtonImage: UIImageView!
 	var postsRef: [Post]?
 	var postRefIndex: Int?
 	var postsLikable = false
+	var postHasInfo = false
 	var parentNav: PlayerNavigationController?
 	
 	var post: Post? {
 		didSet {
 			if let newPost = post {
-				artistLabel.text = newPost.song.artist
-				songLabel.text = newPost.song.title
 				
+				updatePostInfo(newPost)
 				updateAddButton()
 				updateLikeButton()
 				updateSongStatus()
@@ -50,10 +57,12 @@ class PlayerCellView: UIView, PostDelegate {
 	
 	func setup(parent: PlayerNavigationController) {
 		parentNav = parent
-		let tap = UITapGestureRecognizer(target: self, action: #selector(PlayerCellView.expandTap(_:)))
-		self.addGestureRecognizer(tap)
-		progressView.playerDelegate = self
-		progressView.type = .NormalPlayer
+		let tap = UITapGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.collapseTap(_:)))
+		collapseButton.addGestureRecognizer(tap)
+		let pan = UIPanGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.collapsePan(_:)))
+		self.addGestureRecognizer(pan)
+		progressView.expandedDelegate = self
+		progressView.type = .ExpandedPlayer
 		
 		updateAddButton()
 		likeButton.userInteractionEnabled = false
@@ -71,13 +80,44 @@ class PlayerCellView: UIView, PostDelegate {
 							index = index >= count ? 0 : index
 							self?.post = postsRef[index]
 							self?.postRefIndex = index
-							self?.playToggleButtonClicked((self?.playToggleButton)!)
 						} else {
 							self?.updatePlayingStatus()
 						}
 					}
 				}
 			}
+		}
+	}
+	
+	private func getPostTime(time: String) -> String {
+		let num: String = time.substringToIndex(time.endIndex.advancedBy(-1))
+		let unit: String = time.substringFromIndex(time.endIndex.advancedBy(-1))
+		let convertedUnit: String = {
+			switch unit {
+				case "s":
+					return (Int(num) == 1) ? "second" : "seconds"
+				case "m":
+					return (Int(num) == 1) ? "minute" : "minutes"
+				case "h":
+					return (Int(num) == 1) ? "hour" : "hours"
+				case "d":
+					return (Int(num) == 1) ? "day" : "days"
+				default:
+					return (Int(num) == 1) ? "decade" : "decades"
+			}
+		}()
+		return "\(num) \(convertedUnit)"
+	}
+	
+	private func updatePostInfo(newPost: Post) {
+		songLabel.text = newPost.song.title
+		artistLabel.text = newPost.song.artist
+		albumImage.hnk_setImageFromURL(newPost.song.smallArtworkURL ?? NSURL())
+		if postHasInfo {
+			let time = getPostTime(newPost.relativeDate())
+			postDetailLabel.text = "\(newPost.user.name) posted \(time) ago"
+		} else {
+			postDetailLabel.text = ""
 		}
 	}
 	
@@ -91,8 +131,29 @@ class PlayerCellView: UIView, PostDelegate {
 		}
 	}
 	
-	func expandTap(sender: UITapGestureRecognizer) {
-		parentNav?.animateExpandedCell(true)
+	func collapseTap(sender: UITapGestureRecognizer) {
+		parentNav?.animateExpandedCell(false)
+	}
+	
+	func collapsePan(sender: UIPanGestureRecognizer) {
+		if sender.state == .Began || sender.state == .Changed {
+			let translation = sender.translationInView(self)
+			let maxCenter = UIScreen.mainScreen().bounds.height - height/2
+			
+			if translation.y > 0 || sender.view!.center.y > maxCenter {
+				if sender.view!.center.y + translation.y < maxCenter {
+					sender.view!.center.y = maxCenter
+				} else {
+					sender.view!.center.y = sender.view!.center.y + translation.y
+				}
+			}
+			sender.setTranslation(CGPointMake(0,0), inView: self)
+		}
+		
+		if sender.state == .Ended {
+			let velocity = sender.velocityInView(self)
+			parentNav?.animateExpandedCell(velocity.y < 0)
+		}
 	}
 	
 	func updatePlayingStatus() {
@@ -105,12 +166,12 @@ class PlayerCellView: UIView, PostDelegate {
 		updatePlayToggleButton()
 	}
 	
-    @IBAction func playToggleButtonClicked(sender: UIButton) {
-        if let selectedPost = post {
-            selectedPost.player.togglePlaying()
+	@IBAction func playToggleButtonClicked(sender: UIButton) {
+		if let selectedPost = post {
+			selectedPost.player.togglePlaying()
 			updatePlayToggleButton()
-        }
-    }
+		}
+	}
 	
 	private func updatePlayToggleButton() {
 		if let selectedPost = post {
@@ -119,19 +180,19 @@ class PlayerCellView: UIView, PostDelegate {
 			playToggleButton.setBackgroundImage(UIImage(named: name), forState: .Normal)
 		}
 	}
-    
+	
 	@IBAction func addButtonClicked(sender: UIButton) {
 		if songStatus == .NotSaved {
 			SpotifyController.sharedController.saveSpotifyTrack(post!) { success in
 				if success {
-					self.addButton?.setImage(UIImage(named: "check"), forState: .Normal)
+					self.addButtonImage.image = UIImage(named: "check")
 					self.songStatus = .Saved
 				}
 			}
 		} else if songStatus == .Saved {
 			SpotifyController.sharedController.removeSavedSpotifyTrack(post!) { success in
 				if success {
-					self.addButton?.setImage(UIImage(named: "plus"), forState: .Normal)
+					self.addButtonImage.image = UIImage(named: "plus")
 					self.songStatus = .NotSaved
 				}
 			}
@@ -162,10 +223,10 @@ class PlayerCellView: UIView, PostDelegate {
 			if postsLikable {
 				likeButton.userInteractionEnabled = true
 				let name = selectedPost.isLiked ? "filled-heart" : "empty-heart"
-				likeButton?.setBackgroundImage(UIImage(named: name), forState: .Normal)
+				likeButtonImage.image = UIImage(named: name)
 			} else {
 				likeButton.userInteractionEnabled = false
-				likeButton?.setBackgroundImage(UIImage(named: "empty-heart"), forState: .Normal)
+				likeButtonImage.image = UIImage(named: "empty-heart")
 			}
 		}
 	}
@@ -179,4 +240,5 @@ class PlayerCellView: UIView, PostDelegate {
 		label.holdScrolling = true
 		label.animationDelay = 0
 	}
+	
 }

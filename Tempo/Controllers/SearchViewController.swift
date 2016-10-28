@@ -163,6 +163,11 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
 		playerCell.postsLikable = false
 		playerCell.post = cell.postView.post
 		playerCell.postsRef = nil //do not want to autoplay next song
+		let expandedCell = (navigationController as! PlayerNavigationController).expandedCell
+		expandedCell.postsLikable = false
+		expandedCell.postHasInfo = false
+		expandedCell.post = cell.postView.post
+		expandedCell.postsRef = nil //do not want to autoplay next song
 	}
 	
     // MARK: - General Request Methods

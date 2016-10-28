@@ -32,15 +32,14 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 			}
             if let row = currentlyPlayingIndexPath?.row where currentlyPlayingPost?.isEqual(array[row]) ?? false {
                 currentlyPlayingPost?.player.togglePlaying()
-				updatePlayerCell(row)
+				updatePlayerCells(row)
             } else {
                 currentlyPlayingPost?.player.pause(true)
-				
 				currentlyPlayingPost?.player.progress = 0
                 if let currentlyPlayingIndexPath = currentlyPlayingIndexPath {
                     currentlyPlayingPost = array[currentlyPlayingIndexPath.row]
                     currentlyPlayingPost!.player.play(true)
-					updatePlayerCell(currentlyPlayingIndexPath.row)
+					updatePlayerCells(currentlyPlayingIndexPath.row)
                 } else {
                     currentlyPlayingPost = nil
                 }
@@ -275,10 +274,14 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 		}
 	}
 	
-	func updatePlayerCell(row: Int) {
+	func updatePlayerCells(row: Int) {
 		let playerNav = navigationController as! PlayerNavigationController
 		playerNav.playerCell.post = currentlyPlayingPost
 		playerNav.playerCell.postsRef = posts
 		playerNav.playerCell.postRefIndex = row
+		// Also for expanded cell
+		playerNav.expandedCell.post = currentlyPlayingPost
+		playerNav.expandedCell.postsRef = posts
+		playerNav.expandedCell.postRefIndex = row
 	}
 }
