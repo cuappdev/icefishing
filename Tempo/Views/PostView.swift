@@ -103,11 +103,11 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 				playNotificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidChangeStateNotification,
 					object: post.player,
 					queue: NSOperationQueue.mainQueue(), usingBlock: { [weak self] note in
-					self?.updateProfileLabel()
-					self?.playerCellRef!.updatePlayingStatus()
-					self?.expandedPlayerRef!.updatePlayingStatus()
-					self?.setUpTimer()
-					self?.setNeedsDisplay()
+						self?.updateProfileLabel()
+						self?.playerCellRef!.updatePlayingStatus()
+						self?.expandedPlayerRef!.updatePlayingStatus()
+						self?.setUpTimer()
+						self?.setNeedsDisplay()
 					})
  				
 				if let playerCellRef = playerCellRef {

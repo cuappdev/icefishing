@@ -159,15 +159,14 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
 		
 		cell.postView.post?.player.togglePlaying()
 		activePlayer = cell.postView.post?.player
-		let playerCell = (navigationController as! PlayerNavigationController).playerCell
+		let playerNav = navigationController as! PlayerNavigationController
+		let playerCell = playerNav.playerCell
 		playerCell.postsLikable = false
-		playerCell.post = cell.postView.post
-		playerCell.postsRef = nil //do not want to autoplay next song
-		let expandedCell = (navigationController as! PlayerNavigationController).expandedCell
+		let expandedCell = playerNav.expandedCell
 		expandedCell.postsLikable = false
 		expandedCell.postHasInfo = false
-		expandedCell.post = cell.postView.post
-		expandedCell.postsRef = nil //do not want to autoplay next song
+		playerNav.currentPost = cell.postView.post
+		playerNav.postsRef = nil //do not want to autoplay next song
 	}
 	
     // MARK: - General Request Methods

@@ -9,13 +9,7 @@
 import UIKit
 import MarqueeLabel
 
-let ExpandedPostLikedStatusChangeNotification = "PostLikedStatusChange"
-
-protocol ExpandedPostDelegate {
-	var post: Post? { get }
-}
-
-class ExpandedPlayerView: UIView, ExpandedPostDelegate {
+class ExpandedPlayerView: UIView {
 	
 	private let height = CGFloat(204)
 	
@@ -31,29 +25,12 @@ class ExpandedPlayerView: UIView, ExpandedPostDelegate {
     @IBOutlet weak var collapseButton: UIButton!
 	
     @IBOutlet weak var addButtonImage: UIImageView!
-	var postsRef: [Post]?
-	var postRefIndex: Int?
 	var postsLikable = false
 	var postHasInfo = false
 	var parentNav: PlayerNavigationController?
 	
-	var post: Post? {
-		didSet {
-			if let newPost = post {
-				
-				updatePostInfo(newPost)
-				updateAddButton()
-				updateLikeButton()
-				updateSongStatus()
-				updatePlayingStatus()
-				
-				songLabel.holdScrolling = false
-				artistLabel.holdScrolling = false
-			}
-		}
-	}
-	
 	var songStatus: SavedSongStatus = .NotSaved
+	var post: Post?
 	
 	func setup(parent: PlayerNavigationController) {
 		parentNav = parent
@@ -61,32 +38,33 @@ class ExpandedPlayerView: UIView, ExpandedPostDelegate {
 		collapseButton.addGestureRecognizer(tap)
 		let pan = UIPanGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.collapsePan(_:)))
 		self.addGestureRecognizer(pan)
-		progressView.expandedDelegate = self
-		progressView.type = .ExpandedPlayer
+		progressView.playerDelegate = parentNav
 		
 		updateAddButton()
 		likeButton.userInteractionEnabled = false
 		
 		setupMarqueeLabel(songLabel)
 		setupMarqueeLabel(artistLabel)
-		
-		NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidFinishPlayingNotification, object: nil, queue: nil) { [weak self] note in
-			if let current = self?.post {
-				if current.player == note.object as? Player {
-					if let path = self?.postRefIndex {
-						var index = path + 1
-						if let postsRef = self?.postsRef {
-							let count = postsRef.count
-							index = index >= count ? 0 : index
-							self?.post = postsRef[index]
-							self?.postRefIndex = index
-						} else {
-							self?.updatePlayingStatus()
-						}
-					}
-				}
-			}
+	}
+	
+	func updateCellInfo(newPost: Post) {
+		post = newPost
+		songLabel.text = newPost.song.title
+		artistLabel.text = newPost.song.artist
+		albumImage.hnk_setImageFromURL(newPost.song.smallArtworkURL ?? NSURL())
+		if postHasInfo {
+			let time = getPostTime(newPost.relativeDate())
+			postDetailLabel.text = "\(newPost.user.name) posted \(time) ago"
+		} else {
+			postDetailLabel.text = ""
 		}
+		songLabel.holdScrolling = false
+		artistLabel.holdScrolling = false
+		
+		updateAddButton()
+		updateLikeButton()
+		updateSongStatus()
+		updatePlayingStatus()
 	}
 	
 	private func getPostTime(time: String) -> String {
@@ -107,18 +85,6 @@ class ExpandedPlayerView: UIView, ExpandedPostDelegate {
 			}
 		}()
 		return "\(num) \(convertedUnit)"
-	}
-	
-	private func updatePostInfo(newPost: Post) {
-		songLabel.text = newPost.song.title
-		artistLabel.text = newPost.song.artist
-		albumImage.hnk_setImageFromURL(newPost.song.smallArtworkURL ?? NSURL())
-		if postHasInfo {
-			let time = getPostTime(newPost.relativeDate())
-			postDetailLabel.text = "\(newPost.user.name) posted \(time) ago"
-		} else {
-			postDetailLabel.text = ""
-		}
 	}
 	
 	private func updateSongStatus() {
@@ -173,7 +139,7 @@ class ExpandedPlayerView: UIView, ExpandedPostDelegate {
 		}
 	}
 	
-	private func updatePlayToggleButton() {
+	func updatePlayToggleButton() {
 		if let selectedPost = post {
 			let name = selectedPost.player.isPlaying ? "pause" : "play"
 			progressView.setUpTimer()

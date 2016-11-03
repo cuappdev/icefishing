@@ -109,7 +109,7 @@
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ye-a8-W0G" customClass="MarqueeLabel" customModule="MarqueeLabel">
-                    <rect key="frame" x="143" y="54" width="229" height="26"/>
+                    <rect key="frame" x="138" y="54" width="230" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="26" id="sME-g9-NPC"/>
                     </constraints>
@@ -118,7 +118,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Artist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RcR-vP-5Lt" customClass="MarqueeLabel" customModule="MarqueeLabel">
-                    <rect key="frame" x="143" y="80" width="229" height="24"/>
+                    <rect key="frame" x="138" y="80" width="230" height="24"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="24" id="xtD-r5-6or"/>
                     </constraints>
@@ -159,7 +159,7 @@
                 <constraint firstItem="KaL-JG-6xo" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="16" id="9MQ-3K-9XT"/>
                 <constraint firstItem="tbr-7O-06Y" firstAttribute="leading" secondItem="3H0-NH-Sl1" secondAttribute="trailing" constant="8" id="BJS-Fp-OKZ"/>
                 <constraint firstItem="dMS-4o-SU3" firstAttribute="leading" secondItem="KaL-JG-6xo" secondAttribute="trailing" constant="8" id="DEl-cv-d6W"/>
-                <constraint firstItem="6ye-a8-W0G" firstAttribute="leading" secondItem="p2b-rC-KRD" secondAttribute="trailing" constant="17" id="FDv-Ca-OmA"/>
+                <constraint firstItem="6ye-a8-W0G" firstAttribute="leading" secondItem="p2b-rC-KRD" secondAttribute="trailing" constant="12" id="FDv-Ca-OmA"/>
                 <constraint firstItem="3H0-NH-Sl1" firstAttribute="top" secondItem="Jtm-qb-OpD" secondAttribute="bottom" constant="4" id="PvA-hB-5uF"/>
                 <constraint firstAttribute="trailing" secondItem="YuT-Z9-UpH" secondAttribute="trailing" constant="12" id="SHG-V5-p91"/>
                 <constraint firstAttribute="trailing" secondItem="dMS-4o-SU3" secondAttribute="trailing" constant="8" id="ST0-wo-oGR"/>
@@ -172,7 +172,7 @@
                 <constraint firstItem="YuT-Z9-UpH" firstAttribute="centerY" secondItem="Jtm-qb-OpD" secondAttribute="centerY" id="gCb-78-yGE"/>
                 <constraint firstItem="RcR-vP-5Lt" firstAttribute="leading" secondItem="6ye-a8-W0G" secondAttribute="leading" id="pk7-hr-x5S"/>
                 <constraint firstItem="KaL-JG-6xo" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="qFe-UA-xFq"/>
-                <constraint firstAttribute="trailing" secondItem="6ye-a8-W0G" secondAttribute="trailing" constant="8" id="qNm-yX-L4f"/>
+                <constraint firstAttribute="trailing" secondItem="6ye-a8-W0G" secondAttribute="trailing" constant="12" id="qNm-yX-L4f"/>
                 <constraint firstItem="dMS-4o-SU3" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="16" id="uxf-LF-cer"/>
                 <constraint firstItem="tbr-7O-06Y" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="vfo-4T-Er2"/>
                 <constraint firstItem="YuT-Z9-UpH" firstAttribute="leading" secondItem="Jtm-qb-OpD" secondAttribute="trailing" constant="12" id="w64-ne-X4Q"/>
@@ -181,6 +181,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <variation key="default">
                 <mask key="constraints">
+                    <exclude reference="b8h-19-iZq"/>
                     <exclude reference="vfo-4T-Er2"/>
                 </mask>
             </variation>

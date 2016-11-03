@@ -32,14 +32,14 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 			}
             if let row = currentlyPlayingIndexPath?.row where currentlyPlayingPost?.isEqual(array[row]) ?? false {
                 currentlyPlayingPost?.player.togglePlaying()
-				updatePlayerCells(row)
+				updatePlayerNavRefs(row)
             } else {
                 currentlyPlayingPost?.player.pause(true)
 				currentlyPlayingPost?.player.progress = 0
                 if let currentlyPlayingIndexPath = currentlyPlayingIndexPath {
-                    currentlyPlayingPost = array[currentlyPlayingIndexPath.row]
-                    currentlyPlayingPost!.player.play(true)
-					updatePlayerCells(currentlyPlayingIndexPath.row)
+					currentlyPlayingPost = array[currentlyPlayingIndexPath.row]
+					updatePlayerNavRefs(currentlyPlayingIndexPath.row)
+					currentlyPlayingPost!.player.play(true)
                 } else {
                     currentlyPlayingPost = nil
                 }
@@ -141,6 +141,7 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 			UIApplication.sharedApplication().endReceivingRemoteControlEvents()
 			_ = try? session.setActive(false)
 			center.nowPlayingInfo = nil
+			
 		}
     }
     
@@ -274,14 +275,10 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 		}
 	}
 	
-	func updatePlayerCells(row: Int) {
+	func updatePlayerNavRefs(row: Int) {
 		let playerNav = navigationController as! PlayerNavigationController
-		playerNav.playerCell.post = currentlyPlayingPost
-		playerNav.playerCell.postsRef = posts
-		playerNav.playerCell.postRefIndex = row
-		// Also for expanded cell
-		playerNav.expandedCell.post = currentlyPlayingPost
-		playerNav.expandedCell.postsRef = posts
-		playerNav.expandedCell.postRefIndex = row
+		playerNav.currentPost = currentlyPlayingPost
+		playerNav.postsRef = posts
+		playerNav.postRefIndex = row
 	}
 }
