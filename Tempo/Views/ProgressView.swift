@@ -18,15 +18,18 @@ class ProgressView: UIView {
 	var playerDelegate: PostDelegate!
 	let fillColor = UIColor.tempoLightRed
 	private var updateTimer: NSTimer?
+	var indicator: UIView?
 	
 	override func drawRect(rect: CGRect) {
 		var progress = 0.0
 		progress = playerDelegate.currentPost?.player.progress ?? 0
+		let fill = bounds.width * CGFloat(progress)
 		
 		super.drawRect(rect)
 		fillColor.setFill()
 		CGContextFillRect(UIGraphicsGetCurrentContext(),
-			CGRect(x: 0, y: 0, width: bounds.width * CGFloat(progress), height: bounds.height))
+			CGRect(x: 0, y: 0, width: fill, height: bounds.height))
+		indicator?.center.x = self.frame.origin.x + fill
 	}
 	
 	dynamic private func timerFired(timer: NSTimer) {

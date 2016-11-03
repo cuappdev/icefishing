@@ -20,7 +20,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 	let frameHeight = CGFloat(72)
 	
 	var expandedCell: ExpandedPlayerView!
-	let expandedHeight = CGFloat(204)
+	let expandedHeight = CGFloat(198)
 	
 	var postsRef: [Post]?
 	var postRefIndex: Int?
@@ -41,6 +41,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 		playerCell = NSBundle.mainBundle().loadNibNamed("PlayerCellView", owner: self, options: nil).first as? PlayerCellView
 		playerCell?.setup(self)
 		playerCell?.frame = CGRectMake(0, 0, UIScreen.mainScreen().bounds.width, frameHeight)
+		playerCell?.userInteractionEnabled = false
 		playerFrame.addSubview(playerCell!)
 		// Do any additional setup after loading the view.
 		

@@ -53,7 +53,7 @@
                         <constraint firstAttribute="width" constant="30" id="X2k-iv-NQD"/>
                         <constraint firstAttribute="width" constant="30" id="bvA-Yk-cgQ"/>
                     </constraints>
-                    <state key="normal" backgroundImage="play">
+                    <state key="normal" backgroundImage="play-red">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <variation key="default">
@@ -123,7 +123,7 @@
     </objects>
     <resources>
         <image name="empty-heart" width="18" height="16"/>
-        <image name="play" width="28" height="28"/>
+        <image name="play-red" width="24" height="24"/>
         <image name="plus" width="16" height="16"/>
     </resources>
 </document>

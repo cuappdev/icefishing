@@ -29,9 +29,12 @@ class PlayerCellView: UIView {
 		let tap = UITapGestureRecognizer(target: self, action: #selector(PlayerCellView.expandTap(_:)))
 		self.addGestureRecognizer(tap)
 		progressView.playerDelegate = parentNav
+		progressView.backgroundColor = UIColor.tempoSuperDarkRed
 		
 		updateAddButton()
 		likeButton.userInteractionEnabled = false
+		playToggleButton.layer.cornerRadius = 5
+		playToggleButton.clipsToBounds = true
 		
 		setupMarqueeLabel(songLabel)
 		setupMarqueeLabel(artistLabel)
@@ -43,6 +46,7 @@ class PlayerCellView: UIView {
 		artistLabel.text = newPost.song.artist
 		songLabel.holdScrolling = false
 		artistLabel.holdScrolling = false
+		self.userInteractionEnabled = true
 		
 		updateAddButton()
 		updateLikeButton()
@@ -83,7 +87,7 @@ class PlayerCellView: UIView {
 	
 	func updatePlayToggleButton() {
 		if let selectedPost = post {
-			let name = selectedPost.player.isPlaying ? "pause" : "play"
+			let name = selectedPost.player.isPlaying ? "pause-red" : "play-red"
 			progressView.setUpTimer()
 			playToggleButton.setBackgroundImage(UIImage(named: name), forState: .Normal)
 		}
