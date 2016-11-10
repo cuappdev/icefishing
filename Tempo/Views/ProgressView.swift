@@ -21,8 +21,7 @@ class ProgressView: UIView {
 	var indicator: UIView?
 	
 	override func drawRect(rect: CGRect) {
-		var progress = 0.0
-		progress = playerDelegate.currentPost?.player.progress ?? 0
+		let progress = playerDelegate.currentPost?.player.progress ?? 0.0
 		let fill = bounds.width * CGFloat(progress)
 		
 		super.drawRect(rect)
@@ -30,7 +29,7 @@ class ProgressView: UIView {
 		CGContextFillRect(UIGraphicsGetCurrentContext(),
 			CGRect(x: 0, y: 0, width: fill, height: bounds.height))
 		if let indicator = indicator {
-			indicator.center.x = self.frame.origin.x + fill
+			indicator.center.x = frame.origin.x + fill
 		}
 	}
 	

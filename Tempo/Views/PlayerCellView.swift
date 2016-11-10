@@ -28,7 +28,7 @@ class PlayerCellView: UIView {
 		parentNav = parent
 		backgroundColor = UIColor.tempoSuperDarkGray
 		let tap = UITapGestureRecognizer(target: self, action: #selector(PlayerCellView.expandTap(_:)))
-		self.addGestureRecognizer(tap)
+		addGestureRecognizer(tap)
 		progressView.playerDelegate = parentNav
 		progressView.backgroundColor = UIColor.tempoSuperDarkRed
 		
@@ -47,7 +47,7 @@ class PlayerCellView: UIView {
 		artistLabel.text = newPost.song.artist
 		songLabel.holdScrolling = false
 		artistLabel.holdScrolling = false
-		self.userInteractionEnabled = true
+		userInteractionEnabled = true
 		
 		updateAddButton()
 		updateLikeButton()

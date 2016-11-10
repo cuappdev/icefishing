@@ -37,7 +37,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 		super.viewDidLoad()
 		let playerFrame = UIView(frame: CGRectMake(0, UIScreen.mainScreen().bounds.height - frameHeight, UIScreen.mainScreen().bounds.width, frameHeight))
 		playerFrame.backgroundColor = UIColor.redColor()
-		self.view.addSubview(playerFrame)
+		view.addSubview(playerFrame)
 		playerCell = NSBundle.mainBundle().loadNibNamed("PlayerCellView", owner: self, options: nil).first as? PlayerCellView
 		playerCell?.setup(self)
 		playerCell?.frame = CGRectMake(0, 0, UIScreen.mainScreen().bounds.width, frameHeight)
@@ -49,7 +49,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 		expandedCell = NSBundle.mainBundle().loadNibNamed("ExpandedPlayerView", owner: self, options: nil).first as? ExpandedPlayerView
 		expandedCell?.setup(self)
 		expandedCell?.frame = CGRectMake(0, UIScreen.mainScreen().bounds.height, UIScreen.mainScreen().bounds.width, expandedHeight)
-		self.view.addSubview(expandedCell!)
+		view.addSubview(expandedCell!)
 		
 		
 		NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidFinishPlayingNotification, object: nil, queue: nil) { [weak self] note in
@@ -58,8 +58,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 					if let path = self?.postRefIndex {
 						var index = path + 1
 						if let postsRef = self?.postsRef {
-							let count = postsRef.count
-							index = (index >= count) ? 0 : index
+							index = (index >= postsRef.count) ? 0 : index
 							self?.postRefIndex = index
 							self?.currentPost = postsRef[index]
 							self?.currentPost?.player.togglePlaying()
