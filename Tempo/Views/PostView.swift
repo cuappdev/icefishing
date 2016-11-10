@@ -45,8 +45,8 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 	var songStatus: SavedSongStatus = .NotSaved
 	var delegate: PostViewDelegate?
     private var updateTimer: NSTimer?
-	private var playNotificationHandler: AnyObject?
-	private var likedNotificationHandler: AnyObject?
+	private var playNotificationHandler: NSObjectProtocol?
+	private var likedNotificationHandler: NSObjectProtocol?
 	var playerController: PlayerTableViewController?
 	var playerCellRef: PlayerCellView?
 	var expandedPlayerRef: ExpandedPlayerView?

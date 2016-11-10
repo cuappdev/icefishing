@@ -50,6 +50,10 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 	var savedSongAlertView: SavedSongView!
 	var justOpened = true
 	
+	private var changeStateNotificationHandler: NSObjectProtocol?
+	private var seekNotificationHandler: NSObjectProtocol?
+	private var downloadArtworkNotificationHandler: NSObjectProtocol?
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
@@ -88,6 +92,19 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
 		super.viewDidAppear(animated)
 		
 		justOpened = true
+	}
+	
+	deinit {
+		let center = NSNotificationCenter.defaultCenter()
+		if let changeStateNotificationHandler = changeStateNotificationHandler {
+			center.removeObserver(changeStateNotificationHandler)
+		}
+		if let seekNotificationHandler = seekNotificationHandler {
+			center.removeObserver(seekNotificationHandler)
+		}
+		if let downloadArtworkNotificationHandler = downloadArtworkNotificationHandler {
+			center.removeObserver(downloadArtworkNotificationHandler)
+		}
 	}
 	
     // MARK: - Table view data source
@@ -146,25 +163,25 @@ class PlayerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func notifCenterSetup() {
-        NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidChangeStateNotification, object: nil, queue: nil) { [weak self] note in
+		let center = NSNotificationCenter.defaultCenter()
+		
+        changeStateNotificationHandler = center.addObserverForName(PlayerDidChangeStateNotification, object: nil, queue: nil) { [weak self] note in
             if note.object as? Player == self?.currentlyPlayingPost?.player {
                 self?.updateNowPlayingInfo()
             }
         }
-        
-        NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidSeekNotification, object: nil, queue: nil) { [weak self] note in
+        seekNotificationHandler = center.addObserverForName(PlayerDidSeekNotification, object: nil, queue: nil) { [weak self] note in
             if note.object as? Player == self?.currentlyPlayingPost?.player {
                 self?.updateNowPlayingInfo()
             }
         }
-        
-        NSNotificationCenter.defaultCenter().addObserverForName(SongDidDownloadArtworkNotification, object: nil, queue: nil) { [weak self] note in
+        downloadArtworkNotificationHandler = center.addObserverForName(SongDidDownloadArtworkNotification, object: nil, queue: nil) { [weak self] note in
             if note.object as? Song == self?.currentlyPlayingPost?.song {
                 self?.updateNowPlayingInfo()
             }
         }
     }
-    
+	
     func commandCenterHandler() {
         // TODO: fetch the largest artwork image for lockscreen in Post
         let center = MPRemoteCommandCenter.sharedCommandCenter()

@@ -33,6 +33,8 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 		}
 	}
 	
+	private var notificationHandler: NSObjectProtocol?
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		let playerFrame = UIView(frame: CGRectMake(0, UIScreen.mainScreen().bounds.height - frameHeight, UIScreen.mainScreen().bounds.width, frameHeight))
@@ -51,8 +53,7 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 		expandedCell?.frame = CGRectMake(0, UIScreen.mainScreen().bounds.height, UIScreen.mainScreen().bounds.width, expandedHeight)
 		view.addSubview(expandedCell!)
 		
-		
-		NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidFinishPlayingNotification, object: nil, queue: nil) { [weak self] note in
+		notificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidFinishPlayingNotification, object: nil, queue: nil) { [weak self] note in
 			if let current = self?.currentPost {
 				if current.player == note.object as? Player {
 					if let path = self?.postRefIndex {
@@ -71,6 +72,12 @@ class PlayerNavigationController: UINavigationController, PostDelegate {
 			}
 		}
 		
+	}
+	
+	deinit {
+		if let notificationHandler = notificationHandler {
+			NSNotificationCenter.defaultCenter().removeObserver(notificationHandler)
+		}
 	}
 	
 	func animateExpandedCell(isExpanding: Bool) {

@@ -29,6 +29,10 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
 	var searchBar = UISearchBar()
 	var selfPostIds: [String] = []
 	
+	private var keyboardShowNotificationHandler: AnyObject?
+	private var keyboardHideNotificationHandler: AnyObject?
+	
+	
 	// MARK: - Lifecycle Methods
 	
 	override func viewDidLoad() {
