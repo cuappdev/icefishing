@@ -26,6 +26,7 @@ class PlayerCellView: UIView {
 	
 	func setup(parent: PlayerNavigationController) {
 		parentNav = parent
+		backgroundColor = UIColor.tempoSuperDarkGray
 		let tap = UITapGestureRecognizer(target: self, action: #selector(PlayerCellView.expandTap(_:)))
 		self.addGestureRecognizer(tap)
 		progressView.playerDelegate = parentNav
@@ -97,14 +98,14 @@ class PlayerCellView: UIView {
 		if songStatus == .NotSaved {
 			SpotifyController.sharedController.saveSpotifyTrack(post!) { success in
 				if success {
-					self.addButton?.setImage(UIImage(named: "check"), forState: .Normal)
+					self.addButton.setBackgroundImage(UIImage(named: "check"), forState: .Normal)
 					self.songStatus = .Saved
 				}
 			}
 		} else if songStatus == .Saved {
 			SpotifyController.sharedController.removeSavedSpotifyTrack(post!) { success in
 				if success {
-					self.addButton?.setImage(UIImage(named: "plus"), forState: .Normal)
+					self.addButton.setBackgroundImage(UIImage(named: "plus"), forState: .Normal)
 					self.songStatus = .NotSaved
 				}
 			}

@@ -29,7 +29,9 @@ class ProgressView: UIView {
 		fillColor.setFill()
 		CGContextFillRect(UIGraphicsGetCurrentContext(),
 			CGRect(x: 0, y: 0, width: fill, height: bounds.height))
-		indicator?.center.x = self.frame.origin.x + fill
+		if let indicator = indicator {
+			indicator.center.x = self.frame.origin.x + fill
+		}
 	}
 	
 	dynamic private func timerFired(timer: NSTimer) {

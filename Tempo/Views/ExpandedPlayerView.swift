@@ -17,15 +17,19 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 	@IBOutlet weak var songLabel: MarqueeLabel!
 	@IBOutlet weak var artistLabel: MarqueeLabel!
 	@IBOutlet weak var albumImage: UIImageView!
+	@IBOutlet weak var topViewContainer: UIView!
+	
+	
 	@IBOutlet weak var playToggleButton: UIButton!
 	@IBOutlet weak var progressView: ProgressView!
-	@IBOutlet weak var progressIndicator: UIView!
 	@IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var likeButtonImage: UIImageView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var collapseButton: UIButton!
-	
     @IBOutlet weak var addButtonImage: UIImageView!
+	
+	var progressIndicator: UIView!
+	
 	var postsLikable = false
 	var postHasInfo = false
 	var parentNav: PlayerNavigationController?
@@ -34,32 +38,41 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 	var post: Post?
 	private var wasPlaying = false
 	
-	private var tapGestureRecognizer: UITapGestureRecognizer?
-	private var panGestureRecognizer: UIPanGestureRecognizer?
+	var tapGestureRecognizer: UITapGestureRecognizer?
+	var panGestureRecognizer: UIPanGestureRecognizer?
 	var initialPanView: UIView?
 	
 	func setup(parent: PlayerNavigationController) {
+		backgroundColor = UIColor.tempoSuperDarkGray
 		// Setup gesture recognizers
 		tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.expandedCellTapped(_:)))
 		tapGestureRecognizer?.delegate = self
 		tapGestureRecognizer?.cancelsTouchesInView = false
-		addGestureRecognizer(tapGestureRecognizer!)
-		panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.expandCellPanned(_:)))
+		self.addGestureRecognizer(tapGestureRecognizer!)
+		panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.progressPanned(_:)))
 		panGestureRecognizer?.delegate = self
 		panGestureRecognizer?.delaysTouchesBegan = false
-		addGestureRecognizer(panGestureRecognizer!)
+		self.addGestureRecognizer(panGestureRecognizer!)
 		
-		// setup cell
+		let closeTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.collapseTap(_:)))
+		closeTapGestureRecognizer.cancelsTouchesInView = false
+		topViewContainer.addGestureRecognizer(closeTapGestureRecognizer)
+		let cellPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ExpandedPlayerView.collapsePan(_:)))
+		cellPanGestureRecognizer.delaysTouchesBegan = false
+		topViewContainer.addGestureRecognizer(cellPanGestureRecognizer)
+		
 		parentNav = parent
 		progressView.playerDelegate = parentNav
 		progressView.backgroundColor = UIColor.tempoSuperDarkRed
-		progressView.indicator = progressIndicator
-		progressIndicator.backgroundColor = UIColor.clearColor()
+		
+		progressIndicator = UIView(frame: CGRectMake(progressView.frame.origin.x - 6, progressView.frame.origin.y - 6, 12, 12))
+		progressIndicator.layer.cornerRadius = 6
+		progressIndicator.backgroundColor = UIColor.tempoLightRed
 		progressIndicator.userInteractionEnabled = true
-		let indicator = progressIndicator.subviews.first!
-		indicator.backgroundColor = UIColor.tempoLightRed
-		indicator.layer.cornerRadius = 6
-		indicator.center.x = progressView.frame.origin.x
+		self.addSubview(progressIndicator)
+		self.bringSubviewToFront(playToggleButton)
+		
+		progressView.indicator = progressIndicator
 		
 		playToggleButton.layer.cornerRadius = 5
 		playToggleButton.clipsToBounds = true
@@ -131,6 +144,11 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 		updatePlayToggleButton()
 	}
 	
+	func collapseTap(sender: UITapGestureRecognizer) {
+		// Collapse expanded cell
+		parentNav?.animateExpandedCell(false)
+	}
+	
 	func expandedCellTapped(sender: UITapGestureRecognizer) {
 		let tapPoint = sender.locationInView(self)
 		let hitView = hitTest(tapPoint, withEvent: nil)
@@ -163,67 +181,52 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 				NSNotificationCenter.defaultCenter().postNotificationName(PostLikedStatusChangeNotification, object: self)
 			}
 		} else {
-			// Collapse expanded cell
-			parentNav?.animateExpandedCell(false)
 		}
 	}
 	
-	dynamic func expandCellPanned(gesture: UIPanGestureRecognizer) {
-		let panPoint = gesture.locationInView(self)
-		var panView = hitTest(panPoint, withEvent: nil)
-		if let pv = initialPanView {
-			panView = pv
+	dynamic func progressPanned(gesture: UIPanGestureRecognizer) {
+		if gesture.state != .Ended {
+			if post?.player.isPlaying ?? false {
+				post?.player.pause(false)
+				wasPlaying = true
+			}
 		} else {
-			initialPanView = panView
+			if wasPlaying {
+				post?.player.play(false)
+			}
+			wasPlaying = false
+			initialPanView = nil
 		}
 		
-		if panView == progressIndicator {
-			print("progress...")
-			if gesture.state != .Ended {
-				if post?.player.isPlaying ?? false {
-					post?.player.pause(false)
-					wasPlaying = true
+		let panPoint = gesture.locationInView(self)
+		let xTranslation = panPoint.x
+		let progressWidth = progressView.bounds.width
+		
+		let progress = Double((xTranslation - progressView.frame.origin.x)/progressWidth)
+		post?.player.progress = progress
+		
+		progressView.setNeedsDisplay()
+	}
+	
+	func collapsePan(gesture: UIPanGestureRecognizer) {
+		let translation = gesture.translationInView(self)
+		if gesture.state == .Began || gesture.state == .Changed {
+			let maxCenter = UIScreen.mainScreen().bounds.height - height/2
+			
+			if translation.y > 0 || self.center.y > maxCenter {
+				if self.center.y + translation.y < maxCenter {
+					self.center.y = maxCenter
+				} else {
+					self.center.y = self.center.y + translation.y
 				}
-			} else {
-				if wasPlaying {
-					post?.player.play(false)
-				}
-				wasPlaying = false
-				initialPanView = nil
 			}
-			
-			let xTranslation = panPoint.x
-			let progressWidth = progressView.bounds.width
-			
-			let progress = Double((xTranslation - progressView.frame.origin.x)/progressWidth)
-			post?.player.progress = progress
-			
-			progressView.setNeedsDisplay()
-		} else {
-			print("...Panning")
-			if panView == progressView {
-				initialPanView = nil
-				return
-			}
-			let translation = gesture.translationInView(self)
-			if gesture.state == .Began || gesture.state == .Changed {
-				let maxCenter = UIScreen.mainScreen().bounds.height - height/2
-				
-				if translation.y > 0 || gesture.view!.center.y > maxCenter {
-					if gesture.view!.center.y + translation.y < maxCenter {
-						gesture.view!.center.y = maxCenter
-					} else {
-						gesture.view!.center.y = gesture.view!.center.y + translation.y
-					}
-				}
-				gesture.setTranslation(CGPointMake(0,0), inView: self)
-			}
-			
-			if gesture.state == .Ended {
-				let velocity = gesture.velocityInView(self)
-				parentNav?.animateExpandedCell(velocity.y < 0)
-				initialPanView = nil
-			}
+			gesture.setTranslation(CGPointMake(0,0), inView: self)
+		}
+		
+		if gesture.state == .Ended {
+			let velocity = gesture.velocityInView(self)
+			parentNav?.animateExpandedCell(velocity.y < 0)
+			initialPanView = nil
 		}
 		setNeedsDisplay()
 	}
@@ -297,12 +300,6 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 //			NSNotificationCenter.defaultCenter().postNotificationName(PostLikedStatusChangeNotification, object: self)
 //		}
 //	}
-	
-	override func drawRect(rect: CGRect) {
-		super.drawRect(rect)
-		print("drawing...")
-		progressIndicator.center.x = progressView.frame.origin.x + progressView.bounds.width + CGFloat(parentNav?.currentPost?.player.progress ?? 0)
-	}
 	
 	private func setupMarqueeLabel(label: MarqueeLabel) {
 		label.speed = .Duration(8)
