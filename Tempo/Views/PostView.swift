@@ -12,7 +12,6 @@ import MediaPlayer
 
 @objc protocol PostViewDelegate {
 	optional func didTapAddButtonForPostView(postView: PostView)
-	optional func didLongPressOnCell(postView: PostView)
 	optional func didTapImageForPostView(postView: PostView)
 }
 
@@ -43,19 +42,22 @@ class PostView: UIView, UIGestureRecognizerDelegate {
  
     var type: ViewType = .Feed
 	var songStatus: SavedSongStatus = .NotSaved
-	var delegate: PostViewDelegate?
+	var postViewDelegate: PostViewDelegate?
+	var playerDelegate: PlayerDelegate?
     private var updateTimer: NSTimer?
-	private var playNotificationHandler: AnyObject?
-	private var likedNotificationHandler: AnyObject?
+	private var playNotificationHandler: NSObjectProtocol?
+	private var likedNotificationHandler: NSObjectProtocol?
+	private var didFinishPlayingNotificationHandler: NSObjectProtocol?
 	var playerController: PlayerTableViewController?
 	var playerCellRef: PlayerCellView?
+	var expandedPlayerRef: ExpandedPlayerView?
     
     var post: Post? {
         didSet {
-            if let playHandler: AnyObject = playNotificationHandler {
+            if let playHandler = playNotificationHandler {
                 NSNotificationCenter.defaultCenter().removeObserver(playHandler)
             }
-			if let likedHandler: AnyObject = likedNotificationHandler {
+			if let likedHandler = likedNotificationHandler {
 				NSNotificationCenter.defaultCenter().removeObserver(likedHandler)
 			}
 
@@ -70,7 +72,7 @@ class PostView: UIView, UIGestureRecognizerDelegate {
                     descriptionLabel?.text = "\(post.song.title) · \(post.song.artist)"
 					likesLabel?.text = (post.likes == 1) ? "\(post.likes) like" : "\(post.likes) likes"
 					let imageName = post.isLiked ? "filled-heart" : "empty-heart"
-					likedButton?.setImage(UIImage(named: imageName), forState: .Normal)
+					likedButton?.setBackgroundImage(UIImage(named: imageName), forState: .Normal)
 					dateLabel?.text = post.relativeDate()
 				case .History:
 					avatarImageView?.layer.cornerRadius = 7
@@ -78,7 +80,7 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 					descriptionLabel?.text = post.song.artist
 					likesLabel?.text = (post.likes == 1) ? "\(post.likes) like" : "\(post.likes) likes"
 					let imageName = post.isLiked ? "filled-heart" : "empty-heart"
-					likedButton?.setImage(UIImage(named: imageName), forState: .Normal)
+					likedButton?.setBackgroundImage(UIImage(named: imageName), forState: .Normal)
 				case .Liked:
 					avatarImageView?.layer.cornerRadius = 7
 					profileNameLabel?.text = post.song.title
@@ -97,23 +99,15 @@ class PostView: UIView, UIGestureRecognizerDelegate {
                 
                 //! TODO: Write something that makes this nice and relative
                 //! that updates every minute
-				
-                
-				playNotificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PlayerDidChangeStateNotification,
-					object: post.player,
-					queue: NSOperationQueue.mainQueue(), usingBlock: { [weak self] note in
-					self?.updateProfileLabel()
-					self?.playerCellRef!.updatePlayingStatus()
-					self?.setUpTimer()
-					self?.setNeedsDisplay()
-					})
  				
 				if let playerCellRef = playerCellRef {
-					likedNotificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PostLikedStatusChangeNotification,
-						object: playerCellRef,
-						queue: NSOperationQueue.mainQueue(), usingBlock: { [weak self] note in
+					likedNotificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PostLikedStatusChangeNotification, object: playerCellRef, queue: NSOperationQueue.mainQueue(), usingBlock: { [weak self] note in
 							self?.updateLikedStatus()
-						})
+					})
+				} else if let expandedPlayerRef = expandedPlayerRef {
+					likedNotificationHandler = NSNotificationCenter.defaultCenter().addObserverForName(PostLikedStatusChangeNotification, object: expandedPlayerRef, queue: NSOperationQueue.mainQueue(), usingBlock: { [weak self] note in
+							self?.updateLikedStatus()
+					})
 				}
 				
 				if (User.currentUser.currentSpotifyUser?.savedTracks[post.song.spotifyID] != nil) ?? false {
@@ -123,6 +117,13 @@ class PostView: UIView, UIGestureRecognizerDelegate {
             }
         }
     }
+	
+	// Called from delegate whenever player it toggled
+	func updatePlayingStatus() {
+		updateProfileLabel()
+		setUpTimer()
+		setNeedsDisplay()
+	}
 	
 	func updateDateLabel() {
 		self.dateLabel!.hidden = true
@@ -250,7 +251,6 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 				fill = post.player.isPlaying ? 1 : 0
 			 }
 		}
-        
         super.drawRect(rect)
         fillColor.setFill()
         CGContextFillRect(UIGraphicsGetCurrentContext(),
@@ -260,18 +260,14 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 	func postViewPressed(sender: UIGestureRecognizer) {
 		guard let post = post else { return }
 		
-		if sender.isKindOfClass(UILongPressGestureRecognizer) {
-			if sender.state == .Began {
-				delegate?.didLongPressOnCell?(self)
-			}
-		} else if sender.isKindOfClass(UITapGestureRecognizer) {
+		if sender.isKindOfClass(UITapGestureRecognizer) {
 			let tapPoint = sender.locationInView(self)
 			let hitView = hitTest(tapPoint, withEvent: nil)
 			if hitView == likedButton {
 				post.toggleLike()
-				updateLikedStatus()
+				playerDelegate.didToggleLike()
 			} else if hitView == avatarImageView {
-				delegate?.didTapImageForPostView?(self)
+				postViewDelegate?.didTapImageForPostView?(self)
 			}
 		}
 	}
@@ -280,9 +276,7 @@ class PostView: UIView, UIGestureRecognizerDelegate {
 		if let post = post {
 			let name = post.isLiked ? "filled-heart" : "empty-heart"
 			likesLabel?.text = (post.likes == 1) ? "\(post.likes) like" : "\(post.likes) likes"
-			likedButton?.setImage(UIImage(named: name), forState: .Normal)
-			
-			playerCellRef?.updateLikeButton()
+			likedButton?.setBackgroundImage(UIImage(named: name), forState: .Normal)
 		}
 	}
 }

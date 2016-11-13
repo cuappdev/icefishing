@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegate {
+class PostHistoryTableViewController: PlayerTableViewController {
 	
 	var songLikes: [Int] = []
 	var postedDates: [NSDate] = []
@@ -97,8 +97,11 @@ class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegat
 		cell.postView.type = .History
 		let posts = searchController.active ? filteredPosts : self.posts
 		cell.postView.playerCellRef = (navigationController as! PlayerNavigationController).playerCell
+		cell.postView.expandedPlayerRef = (navigationController as! PlayerNavigationController).expandedCell
 		cell.postView.post = posts[absoluteIndex(indexPath)]
-		cell.postView.delegate = self
+		cell.postView.postViewDelegate = self
+		cell.postView.pausePlayDelegate = self
+		cell.postView.post?.player.delegate = self
 		cell.postView.post?.player.prepareToPlay()
 	    cell.postView.dateLabel!.text = ""
 		
@@ -125,8 +128,11 @@ class PostHistoryTableViewController: PlayerTableViewController, PostViewDelegat
 	
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let selectedCell = tableView.cellForRowAtIndexPath(indexPath) as! FeedTableViewCell
-        selectedCell.postView.backgroundColor = UIColor.tempoLightGray
-		(navigationController as! PlayerNavigationController).playerCell.postsLikable = true
+		selectedCell.postView.backgroundColor = UIColor.tempoLightGray
+		let playerNav = navigationController as! PlayerNavigationController
+		playerNav.playerCell.postsLikable = true
+		playerNav.expandedCell.postsLikable = true
+		playerNav.expandedCell.postHasInfo = false
 		currentlyPlayingIndexPath = NSIndexPath(forRow: absoluteIndex(indexPath), inSection: 0)
     }
 	
