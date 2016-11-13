@@ -36,6 +36,7 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 	
 	var songStatus: SavedSongStatus = .NotSaved
 	var post: Post?
+	var delegate: PlayerDelegate!
 	private var wasPlaying = false
 	
 	var tapGestureRecognizer: UITapGestureRecognizer?
@@ -149,9 +150,8 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 		let hitView = hitTest(tapPoint, withEvent: nil)
 		
 		if hitView == playToggleButton {
-			if let selectedPost = post {
-				selectedPost.player.togglePlaying()
-				updatePlayToggleButton()
+			if let _ = post {
+				delegate.didTogglePlaying!(true)
 			}
 		} else if hitView == addButton {
 			if songStatus == .NotSaved {
@@ -170,10 +170,9 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 				}
 			}
 		} else if hitView == likeButton {
-			if let selectedPost = post {
+			if let _ = post {
 				selectedPost.toggleLike()
-				updateLikeButton()
-				NSNotificationCenter.defaultCenter().postNotificationName(PostLikedStatusChangeNotification, object: self)
+				delegate.didToggleLike()
 			}
 		}
 	}
@@ -181,12 +180,12 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 	dynamic func progressPanned(gesture: UIPanGestureRecognizer) {
 		if gesture.state != .Ended {
 			if post?.player.isPlaying ?? false {
-				post?.player.pause(false)
+				delegate.didTogglePlaying!(false)
 				wasPlaying = true
 			}
 		} else {
 			if wasPlaying {
-				post?.player.play(false)
+				delegate.didTogglePlaying!(false)
 			}
 			wasPlaying = false
 			initialPanView = nil
@@ -198,6 +197,7 @@ class ExpandedPlayerView: UIView, UIGestureRecognizerDelegate {
 		
 		let progress = Double((xTranslation - progressView.frame.origin.x)/progressWidth)
 		post?.player.progress = progress
+		delegate.didChangeProgress!()
 		
 		progressView.setNeedsDisplay()
 	}

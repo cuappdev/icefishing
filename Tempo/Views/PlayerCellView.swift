@@ -23,6 +23,7 @@ class PlayerCellView: UIView {
 	
 	var songStatus: SavedSongStatus = .NotSaved
 	var post: Post?
+	var delegate: PlayerDelegate!
 	
 	func setup(parent: PlayerNavigationController) {
 		parentNav = parent
@@ -80,9 +81,8 @@ class PlayerCellView: UIView {
 	}
 	
     @IBAction func playToggleButtonClicked(sender: UIButton) {
-        if let selectedPost = post {
-            selectedPost.player.togglePlaying()
-			updatePlayToggleButton()
+        if let _ = post {
+            delegate.didTogglePlaying!(true)
         }
     }
 	
@@ -126,8 +126,7 @@ class PlayerCellView: UIView {
 	@IBAction func likeButtonClicked(sender: UIButton) {
 		if let selectedPost = post {
 			selectedPost.toggleLike()
-			updateLikeButton()
-			NSNotificationCenter.defaultCenter().postNotificationName(PostLikedStatusChangeNotification, object: self)
+			delegate.didToggleLike!()
 		}
 	}
 	
