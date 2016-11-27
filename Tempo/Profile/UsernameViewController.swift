@@ -22,7 +22,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate, UINavigatio
     @IBOutlet weak var alertLabel: UILabel!
 	
     @IBAction func createUser(sender: UIButton) {
-		guard let username = usernameTextField.text else { print("No Username"); return}
+		guard let username = usernameTextField.text?.lowercased() else { print("No Username"); return}
 		let charSet = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_").inverted
 		let invalidChars = username.rangeOfCharacter(from: charSet)
 		
@@ -31,6 +31,9 @@ class UsernameViewController: UIViewController, UITextFieldDelegate, UINavigatio
 			alertLabel.textColor = UIColor.red
 		} else if invalidChars != nil { // Username contains some invalid characters
 			alertLabel.text = "Only underscores and alphanumeric characters allowed."
+			alertLabel.textColor = UIColor.red
+		} else if username.characters.count > 18 {
+			alertLabel.text = "Username is too long."
 			alertLabel.textColor = UIColor.red
 		} else { // Username contains only valid characters
 			API.sharedAPI.usernameIsValid(username) { success in
