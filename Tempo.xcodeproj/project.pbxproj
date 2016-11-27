@@ -123,7 +123,7 @@
 		1DB2838F1B6D8FCC00134FEA /* NSLayoutContraint+Fill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSLayoutContraint+Fill.swift"; path = "../Controllers/NSLayoutContraint+Fill.swift"; sourceTree = "<group>"; };
 		1DB476471AEF24670066014F /* PostButton.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostButton.xib; sourceTree = "<group>"; };
 		1DD875FB1B6E27DD0041C45B /* NSDateFormatter+Shared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSDateFormatter+Shared.swift"; sourceTree = "<group>"; };
-		1DE649C11B78590800DA5499 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		1DE649C11B78590800DA5499 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../Controllers/SettingsViewController.swift; sourceTree = "<group>"; };
 		1DFB2ED61B76D7FB001B7C76 /* StyleController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StyleController.swift; path = ../Controllers/StyleController.swift; sourceTree = "<group>"; };
 		1DFBFB511B7845E7001DD6AC /* SongSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SongSearchTableViewCell.xib; sourceTree = "<group>"; };
 		1DFBFB531B784634001DD6AC /* SongSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongSearchTableViewCell.swift; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 		6038B1791D80EBEA0083940D /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+Utilities.swift"; path = "Tools/UIViewController+Utilities.swift"; sourceTree = "<group>"; };
 		6038B17D1D80ED250083940D /* FeedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedTableViewCell.swift; sourceTree = "<group>"; };
 		6038B17F1D80EDAF0083940D /* FeedTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedTableViewCell.xib; path = ../Profile/FeedTableViewCell.xib; sourceTree = "<group>"; };
-		60419BEC1DE24AE800CAB9BD /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		60419BEC1DE24AE800CAB9BD /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SettingsViewController.xib; path = ../Controllers/SettingsViewController.xib; sourceTree = "<group>"; };
 		6067F0801BFD4F7E004059A0 /* FollowSuggestionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowSuggestionTableViewController.swift; sourceTree = "<group>"; };
 		6084F6C41BE700B00048EFE3 /* PlayerTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerTableViewController.swift; sourceTree = "<group>"; };
 		6092CBD71C021C5E008836AE /* FollowSuggestionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowSuggestionsTableViewCell.swift; sourceTree = "<group>"; };
@@ -380,6 +380,8 @@
 		6DEE0FC31AC34811005552F9 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				1DE649C11B78590800DA5499 /* SettingsViewController.swift */,
+				60419BEC1DE24AE800CAB9BD /* SettingsViewController.xib */,
 				D17395881ADF360C00A53AEE /* SignInViewController.swift */,
 				D17395891ADF360C00A53AEE /* SignInViewController.xib */,
 				D1173FFF1AF8574400302FFD /* ProfileViewController.swift */,
@@ -412,8 +414,6 @@
 				C7B1984D1DD67D6800EAB8EA /* SpotifyLoginViewController.swift */,
 				C7B1984F1DD67DCA00EAB8EA /* SpotifyLoginViewController.xib */,
 				1D653F3D1B81451700F54455 /* SpotifyController.swift */,
-				1DE649C11B78590800DA5499 /* SettingsViewController.swift */,
-				60419BEC1DE24AE800CAB9BD /* SettingsViewController.xib */,
 				D160AE011BE677D4003B0E1A /* PlaylistTableViewController.swift */,
 			);
 			name = Spotify;
